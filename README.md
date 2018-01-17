@@ -15,10 +15,12 @@ The repository containing the source and license for the original nmeta2 DPAE im
 The repository containing the source and license for the nmeta2 project can be found at https://github.com/mattjhayes/nmeta2.
 
 ## Required Libraries
-###yaml-cpp
-clone https://github.com/jbeder/yaml-cpp.git
-cd <path to yaml-cpp>
-mkdir build
-cd build
-cmake ..
-sudo make install
+### yaml-cpp
+```bash
+$ clone https://github.com/jbeder/yaml-cpp.git
+$ cd <path to the cloned yaml-cpp repository>
+$ mkdir build
+$ cd build
+$ cmake ..
+$ sudo make install
+```
