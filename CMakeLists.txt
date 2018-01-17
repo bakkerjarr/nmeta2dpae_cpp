@@ -21,6 +21,33 @@
 cmake_minimum_required(VERSION 3.5.1)
 project(nm2dpae)
 
-set(SOURCES src/nmeta2dpae.cpp)
+### Version number for nmeta2dpae
+# Declare the version number
+set (nmeta2dpae_VERSION_MAJOR 0)
+set (nmeta2dpae_VERSION_MINOR 0)
+set (nmeta2dpae_VERSION_PATCH 1)
+set (nmeta2dpae_VERSION "${nmeta2dpae_VERSION_MAJOR}.${nmeta2dpae_VERSION_MINOR}.${nmeta2dpae_VERSION_PATCH}")
+# Configure a header file for passing the version numbers to the source code
+configure_file (
+    "src/nmeta2dpaeBuildSettings.hpp.in"
+    "${PROJECT_BINARY_DIR}/nmeta2dpaeBuildSettings.hpp"
+)
 
+# Add the header files and include binary tree to the search path for the
+# nm2dpaeBuildSettings.h file.
+include_directories(src/Config "${PROJECT_BINARY_DIR}")
+
+# Add the source code files
+set(SOURCES src/nmeta2dpae.cpp src/Config/config.cpp)
+
+# configure the compiler
+set (CMAKE_CXX_STANDARD 11)
+
+# Include libraries
+FIND_PACKAGE(yaml-cpp REQUIRED)
+
+# Add the executable
 add_executable(nm2dpae ${SOURCES})
+
+# Link libraries to the executable
+TARGET_LINK_LIBRARIES(nm2dpae yaml-cpp)

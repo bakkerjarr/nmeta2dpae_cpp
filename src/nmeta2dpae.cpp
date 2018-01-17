@@ -14,9 +14,27 @@
 */
 
 #include <iostream>
+
+#include "nmeta2dpaeBuildSettings.hpp"
+#include "Config/config.hpp"
+
 using namespace std;
 
-int main () {
-    cout << "Hello world!" << endl;
-    return 0;
+int main (int argc, char* argv[]) {
+  cout << "[INFO] Running nmeta2dape version: " << nmeta2dpae_VERSION << endl;
+
+  if (argc != 2) {
+      cout << "[CRITICAL] Path to nmeta2 DPAE configuration file was not "
+            "provided." << endl;
+      return 1;
+  }
+
+  string config_path(argv[1]);
+
+  Config conf(config_path);
+  if (!conf.readConfig())
+    cerr << "[CRITICAL] Failed to load nmeta2 DPAE configuration. Ensure that "
+        "the configuration file is located at: " << config_path << endl;
+
+  return 0;
 }
