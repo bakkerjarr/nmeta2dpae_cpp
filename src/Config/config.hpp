@@ -31,6 +31,7 @@ class Config {
   private:
     std::string config_path_;
     YAML::Node config_yaml_;
+    void cleanseParsedConfig(YAML::Node *parsedConfig);
 };
 
 #endif // CONFIG_CONFIG_HPP_
