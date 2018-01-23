@@ -33,7 +33,7 @@ int main (int argc, char* argv[]) {
 
   Config conf(config_path);
   if (!conf.readConfig()) {
-    cerr << "[CRITICAL] Unable to load nmeta2 configuration. Exiting..."
+    cerr << "[CRITICAL] Unable to load nmeta2 dpae configuration. Exiting..."
         << endl;
     return 1;
   }
