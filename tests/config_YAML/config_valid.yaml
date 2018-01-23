@@ -1,0 +1,93 @@
+#*** Traffic Classification Engine Config for nmeta
+#*** Written in YAML
+#
+#========== nmeta Controller ========================
+nmeta_controller_address: http://172.16.0.101
+nmeta_controller_port: 8080
+nmeta_api_path: nmeta/v2/aux/
+#
+#========== SNIFFING CONFIG ===========================
+#*** Interface names to sniff on (comma separated, no spaces)
+#sniff_if_names: eth1,eth2
+sniff_if_names: enp0s9
+#
+#========== SYSLOG ==================================
+#*** Set to 1 if want to log to syslog:
+syslog_enabled: 1
+#
+#*** Where to send syslog (use localhost to keep on-box):
+loghost: localhost
+#
+#*** Port number to send on:
+logport: 514
+#
+#*** Facility to use:
+logfacility: 19
+#
+#*** Syslog Log Format:
+syslog_format: "sev=%(levelname)s module=%(name)s func=%(funcName)s %(message)s"
+#
+#*** Syslog Logging Levels Per Module
+#*** Values can be one of CRITICAL|ERROR|WARNING|INFO|DEBUG:
+nmeta_dpae_logging_level_s: INFO
+sniff_logging_level_s: INFO
+controlplane_logging_level_s: INFO
+dp_logging_level_s: INFO
+tc_logging_level_s: INFO
+tc_policy_dpae_logging_level_s: INFO
+#
+#========== CONSOLE LOGGING =========================
+#*** Set to 1 if want to log to console:
+console_log_enabled: 1
+#
+#*** Set to 1 if you want colorised logs in terminal:
+coloredlogs_enabled: 1
+#
+#*** Console Log Format:
+#console_format: "%(levelname)s: %(name)s %(funcName)s: %(message)s"
+#console_format: "%(levelname)s: %(name)s pid=%(process)d %(funcName)s: %(message)s"
+console_format: "%(asctime)s.%(msecs)03d %(name)s[%(process)d] %(funcName)s %(levelname)s %(message)s"
+#
+#*** Console Logging Levels Per Module
+#*** Values can be one of CRITICAL|ERROR|WARNING|INFO|DEBUG:
+nmeta_dpae_logging_level_c: DEBUG
+sniff_logging_level_c: DEBUG
+controlplane_logging_level_c: DEBUG
+dp_logging_level_c: DEBUG
+tc_logging_level_c: DEBUG
+tc_policy_dpae_logging_level_c: DEBUG
+requests_logging_level: CRITICAL
+#
+#========== DPAE JOIN TIMING PARAMETERS ===============
+#*** Time in seconds to wait between sending Phase 3 API request and
+#     checking the sniff queue for discover confirm packets (run n times):
+phase3_sniff_wait_time: 1
+#
+#*** Number of times to iterate reading the queue, each time waiting for
+#     phase3_sniff_wait_time:
+phase3_queue_reads: 5
+#
+#*** Time in seconds to wait in sniff.discover_confirm for a matching packet:
+phase3_sniff_dc_timeout: 5
+
+
+#========== KEEPALIVE BETWEEN DPAE and CONTROLLER =====
+#*** Interval between keepalive tests in seconds (float):
+keepalive_interval: 1
+#*** Number of concurrent retries before marking controller
+#***  as down and restarting negotiations (integer):
+keepalive_retries: 3
+#
+#========== Mongodb Database ==========================
+mongo_addr: localhost
+mongo_port: 27017
+#
+#========== Elephant Flow Suppression =================
+#*** Number of packets in a flow before sending suppression request to
+#***  controller so that it can install a FE to prevent further packets to DPAE
+suppress_flow_pkt_count_initial: 8
+#
+#*** Number of packets after sending a suppression request for a flow to wait
+#***  before sending a follow up request in case the first one was lost
+suppress_flow_pkt_count_backoff: 500
+
