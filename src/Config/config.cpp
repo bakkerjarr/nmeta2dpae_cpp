@@ -44,7 +44,8 @@ static const map<string, string> CONFIG_TEMPLATE = {
   {"loghost", "localhost"},
   {"logport", "514"},
   {"logfacility", "19"},
-  {"syslog_format", "sev=%(levelname)s module=%(name)s func=%(funcName)s %(message)s"},
+  {"syslog_format", "sev=%(levelname)s module=%(name)s func=%(funcName)s"
+                    "%(message)s"},
   {"console_log_enabled", "1"},
   {"coloredlogs_enabled", "1"},
   {"console_format", "%(levelname)s, %(name)s %(funcName)s, %(message)s"},
@@ -67,6 +68,7 @@ static const map<string, string> CONFIG_TEMPLATE = {
  */
 Config::Config(string config_path) {
   cout << "[INFO] Initialising configuration parser...\n";
+  this->config_loaded_ = false; // configuration has not yet been loaded
   this->config_path_ = config_path;
 }
 
@@ -77,6 +79,15 @@ Config::Config(string config_path) {
  * @return true if successful, false otherwise.
  */
 bool Config::readConfig() {
+  /* Check that the configuration has not already been loaded. This may be */
+  /* triggered by accident (someone has mistakingly called this method) or */
+  /* someone malicious. */
+  if (config_loaded_) {
+    cerr << "[CRITICAL] nmeta2 DPAE configuration has already been "
+        "loaded." << endl;
+    return false;
+  }
+
   cout << "[INFO] Reading nmeta2 DPAE configuration from: " << config_path_
       << endl;
     
@@ -96,9 +107,10 @@ bool Config::readConfig() {
   cleanseParsedConfig(&config_yaml_);
 
   /* Assign default values if attributes are missing from the parsed config. */
-  // TODO: Implement a method for the above comment.
+  provideDefaultConfig(&config_yaml_);
 
   cout << "[INFO] nmeta2 DPAE configuration loaded successfully." << endl;
+  config_loaded_ = true;
   return true;
 }
 
@@ -117,7 +129,8 @@ void Config::cleanseParsedConfig(YAML::Node *parsed_config) {
     string key = it_y->first.as<std::string>();
     if (!CONFIG_TEMPLATE.count(key)) {
       /* An invalid key was found, take note of it. */
-      cerr << "[ERROR] Invalid attribute found in parsed config: " << key << endl;
+      cout << "[WARNING] Invalid attribute found in parsed config: " << key
+          << endl;
       for_deletion.push_back(key);
     }
   }
@@ -128,5 +141,29 @@ void Config::cleanseParsedConfig(YAML::Node *parsed_config) {
     cout << "[INFO] Omitting invalid attribute \'" << *it_l << "\' from "
         "parsed configuration." << endl;
     (*parsed_config).remove(*it_l);    
+  }
+}
+
+/**
+ * Iterate over the parsed and cleansed YAML configuration and provide default
+ * values for any missing attributes.
+ * 
+ * @param parsed_config Address of YAML object that contains the parsed
+ *    configuation.
+ */
+void Config::provideDefaultConfig(YAML::Node *parsed_config) {
+  map<string, string>::const_iterator it_m;
+  for (it_m = CONFIG_TEMPLATE.begin(); it_m != CONFIG_TEMPLATE.end(); ++it_m) {
+    /* Check that this attribute exists within the parsed configuration. */
+    string conf_key = it_m->first;
+    if (!(*parsed_config)[conf_key]) {
+      /* A missing attribute has been found, we must assign a default value. */
+      cout << "[WARNING] Attribute missing from parsed configration: "
+          << conf_key << endl;
+      string conf_val = it_m->second;
+      cout << "[INFO] Creating missing attribute \'" << conf_key << "\' with "
+          "default value: " << conf_val << endl;
+      (*parsed_config)[conf_key] = conf_val;
+    }
   }
 }

@@ -29,9 +29,11 @@ class Config {
     void getValue(std::string configKey);
 
   private:
+    bool config_loaded_;
     std::string config_path_;
     YAML::Node config_yaml_;
     void cleanseParsedConfig(YAML::Node *parsedConfig);
+    void provideDefaultConfig(YAML::Node *parsed_config);
 };
 
 #endif // CONFIG_CONFIG_HPP_
