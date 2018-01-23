@@ -13,3 +13,14 @@ $ cmake -H. -Bbuild
 The repository containing the source and license for the original nmeta2 DPAE implementation can be found at https://github.com/mattjhayes/nmeta2dpae.
 
 The repository containing the source and license for the nmeta2 project can be found at https://github.com/mattjhayes/nmeta2.
+
+## Required Libraries
+### yaml-cpp
+```bash
+$ clone https://github.com/jbeder/yaml-cpp.git
+$ cd <path to the cloned yaml-cpp repository>
+$ mkdir build
+$ cd build
+$ cmake ..
+$ sudo make install
+```

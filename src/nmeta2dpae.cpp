@@ -14,9 +14,37 @@
 */
 
 #include <iostream>
+
+#include "nmeta2dpaeBuildSettings.hpp"
+#include "Config/config.hpp"
+
 using namespace std;
 
-int main () {
-    cout << "Hello world!" << endl;
-    return 0;
+int main (int argc, char* argv[]) {
+  cout << "[INFO] Running nmeta2dape version: " << nmeta2dpae_VERSION << endl;
+
+  if (argc != 2) {
+      cerr << "[CRITICAL] Path to nmeta2 DPAE configuration file was not "
+            "provided." << endl;
+      return 1;
+  }
+
+  string config_path(argv[1]);
+
+  Config conf(config_path);
+  if (!conf.readConfig()) {
+    cerr << "[CRITICAL] Unable to load nmeta2 dpae configuration. Exiting..."
+        << endl;
+    return 1;
+  }
+
+  /*
+  Only use logging once config has been checked. This is so logging
+  configuration can be read in from the config file and put into use.
+
+  Until this point, just print to stdout. Once config is completed, then
+  the main DPAE object can start the logging facility.
+  */
+
+  return 0;
 }
