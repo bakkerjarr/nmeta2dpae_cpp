@@ -14,13 +14,22 @@
 */
 
 #include <iostream>
+#include "ext/spdlog/spdlog.h"
 
 #include "nmeta2dpaeBuildSettings.hpp"
 #include "Config/config.hpp"
 
 using namespace std;
-
 int main (int argc, char* argv[]) {
+  auto console = spdlog::stdout_color_st("nmeta2dpae");
+  spdlog::set_level(spdlog::level::trace);
+  console->info("I'm Mr Meeseeks look at me!");
+  console->error("There you go!");
+  console->debug("Just to bug you...");
+  console->trace("This is different!");
+  console->warn("I'm warning you!");
+  console->critical("Is it hot here or is it just me?");
+
   cout << "[INFO] Running nmeta2dape version: " << nmeta2dpae_VERSION << endl;
 
   if (argc != 2) {
@@ -46,5 +55,6 @@ int main (int argc, char* argv[]) {
   the main DPAE object can start the logging facility.
   */
 
+  spdlog::drop_all(); // Close all loggers before exiting...
   return 0;
 }
