@@ -25,14 +25,14 @@
 class Config {
   public:
     Config(std::string config_path);
+    std::string getValue(std::string config_key);
     bool readConfig();
-    void getValue(std::string configKey);
 
   private:
     bool config_loaded_;
     std::string config_path_;
     YAML::Node config_yaml_;
-    void cleanseParsedConfig(YAML::Node *parsedConfig);
+    void cleanseParsedConfig(YAML::Node *parsed_config);
     void provideDefaultConfig(YAML::Node *parsed_config);
 };
 

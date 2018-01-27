@@ -73,6 +73,17 @@ Config::Config(string config_path) {
 }
 
 /**
+ * Return a string representation of the value of an configuration attribute.
+ * 
+ * @param config_key Name of the configuration attribute to return.
+ * @return A string representation of a configuration value. The caller must
+ *    cast this to another type if needed.
+ */
+string Config::getValue(string config_key) {
+  return config_yaml_[config_key].as<string>();
+}
+
+/**
  * Parse the configuration file and check for correctness. The configuration
  * data is stored if the file if legal.
  * 
@@ -105,6 +116,8 @@ bool Config::readConfig() {
 
   /* Verify that the YAML file contains legal keys. */
   cleanseParsedConfig(&config_yaml_);
+
+  /* TODO: Check that the values provided for each attribute are valid. */
 
   /* Assign default values if attributes are missing from the parsed config. */
   provideDefaultConfig(&config_yaml_);
