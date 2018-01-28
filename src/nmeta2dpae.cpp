@@ -19,7 +19,8 @@
 #include "ext/spdlog/spdlog.h"
 
 #include "nmeta2dpaeBuildSettings.hpp"
-#include "Config/config.hpp"
+#include "config/config.hpp"
+#include "config/tc_policy.hpp"
 
 using namespace std;
 
@@ -54,12 +55,15 @@ class Nmeta2Dpae {
       /* Configure logging and establish a logger for this object. We store the
        * sinks so that they may be passed onto other objects. */
       vector<spdlog::sink_ptr> sinks = prepareLogger();
-
+      
       nm2_log_->debug("Debug");
       nm2_log_->info("Information");
       nm2_log_->warn("Warning");
       nm2_log_->error("Error");
       nm2_log_->critical("Critical!");
+
+      /* Instantiate TC Policy class */
+      TcPolicy tc_pol(conf_, sinks);
 
     }
 
@@ -121,17 +125,6 @@ class Nmeta2Dpae {
       
       /* Set the log level on the logger. */
       string log_level = conf_.getValue("nmeta_dpae_logging_level_c");
-      if (!log_level.compare("CRITICAL"))
-        nm2_log_->set_level(spdlog::level::critical);
-      else if (!log_level.compare("ERROR"))
-        nm2_log_->set_level(spdlog::level::err);
-      else if (!log_level.compare("WARNING"))
-        nm2_log_->set_level(spdlog::level::warn);
-      else if (!log_level.compare("INFO"))
-        nm2_log_->set_level(spdlog::level::info);
-      else /* Treat anything else as debug level. */
-        nm2_log_->set_level(spdlog::level::debug);
-
       if (sinks.size() == 0) {
         cout << "[WARNING] Logging disabled for nmeta2 DPAE. This will be the "
             "last message." << endl;
@@ -145,8 +138,18 @@ class Nmeta2Dpae {
               names.append(", ").append(*s_name);
           }
         nm2_log_->info("nmeta2 DPAE logging enabled for: {0}. Minimum logging "
-                       "level is: {1}", names, log_level);
+                       "level will be: {1}", names, log_level);
       }
+      if (!log_level.compare("CRITICAL"))
+        nm2_log_->set_level(spdlog::level::critical);
+      else if (!log_level.compare("ERROR"))
+        nm2_log_->set_level(spdlog::level::err);
+      else if (!log_level.compare("WARNING"))
+        nm2_log_->set_level(spdlog::level::warn);
+      else if (!log_level.compare("INFO"))
+        nm2_log_->set_level(spdlog::level::info);
+      else /* Treat anything else as debug level. */
+        nm2_log_->set_level(spdlog::level::debug);
       
       return sinks;
     }

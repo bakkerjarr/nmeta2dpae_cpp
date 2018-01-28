@@ -12,29 +12,26 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-#ifndef CONFIG_CONFIG_HPP_
-#define CONFIG_CONFIG_HPP_
 
-#include <string>
-#include <yaml-cpp/yaml.h>
+#ifndef CONFIG_TC_POLICY_HPP_
+#define CONFIG_TC_POLICY_HPP_
+
+#include "../ext/spdlog/spdlog.h"
+
+#include "config.hpp"
 
 /**
- * Ingests the configuration file for the DPAE and provides access to the
- * keys/values that it contains.
+ * Provides methods to ingest the traffic classification policy file
+ * (main_policy.yaml) from the nmeta2 controller. Note: This object is stored
+ * on the heap.
  */
-class Config {
+class TcPolicy {
   public:
-    Config(std::string config_path);
-    Config(const Config &other);
-    std::string getValue(std::string config_key);
-    bool readConfig();
+    TcPolicy(Config conf, std::vector<spdlog::sink_ptr> sinks);
 
   private:
-    bool config_loaded_;
-    std::string config_path_;
-    YAML::Node config_yaml_;
-    void cleanseParsedConfig(YAML::Node *parsed_config);
-    void provideDefaultConfig(YAML::Node *parsed_config);
+    Config conf_;
+    std::shared_ptr<spdlog::logger> tc_pol_log_;
 };
 
-#endif // CONFIG_CONFIG_HPP_
+#endif // CONFIG_TC_POLICY_HPP_

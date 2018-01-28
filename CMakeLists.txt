@@ -41,7 +41,7 @@ configure_file (
 include_directories(src/Config src/ext/spdlog "${PROJECT_BINARY_DIR}")
 
 # Add the source code files
-set(SOURCES src/nmeta2dpae.cpp src/Config/config.cpp)
+set(SOURCES src/nmeta2dpae.cpp src/config/config.cpp src/config/tc_policy.cpp)
 
 # configure the compiler
 set (CMAKE_CXX_STANDARD 11)

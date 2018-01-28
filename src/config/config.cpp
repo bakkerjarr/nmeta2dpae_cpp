@@ -73,6 +73,17 @@ Config::Config(string config_path) {
 }
 
 /**
+ * Copy constructor for Config object.
+ * 
+ * @param other Another Config object to copy members from.
+ */
+Config::Config(const Config &other){
+    config_loaded_ = other.config_loaded_;
+    config_path_ = other.config_path_;
+    config_yaml_ = other.config_yaml_;
+}
+
+/**
  * Return a string representation of the value of an configuration attribute.
  * 
  * @param config_key Name of the configuration attribute to return.
