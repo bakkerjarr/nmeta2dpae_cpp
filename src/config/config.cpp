@@ -21,8 +21,8 @@
 
 using namespace std;
 
-/* A template used to validate configuration files and assign default values */
-/* if attributes are missing. */
+/* A template used to validate configuration files and assign default values if
+ * if attributes are missing. */
 static const map<string, string> CONFIG_TEMPLATE = {
   {"nmeta_controller_address", "10.1.0.3"},
   {"nmeta_controller_port", "8080"},
@@ -73,15 +73,37 @@ Config::Config(string config_path) {
 }
 
 /**
+ * Copy constructor for Config object.
+ * 
+ * @param other Another Config object to copy members from.
+ */
+Config::Config(const Config &other){
+    config_loaded_ = other.config_loaded_;
+    config_path_ = other.config_path_;
+    config_yaml_ = other.config_yaml_;
+}
+
+/**
+ * Return a string representation of the value of an configuration attribute.
+ * 
+ * @param config_key Name of the configuration attribute to return.
+ * @return A string representation of a configuration value. The caller must
+ *    cast this to another type if needed.
+ */
+string Config::getValue(string config_key) {
+  return config_yaml_[config_key].as<string>();
+}
+
+/**
  * Parse the configuration file and check for correctness. The configuration
  * data is stored if the file if legal.
  * 
  * @return true if successful, false otherwise.
  */
 bool Config::readConfig() {
-  /* Check that the configuration has not already been loaded. This may be */
-  /* triggered by accident (someone has mistakingly called this method) or */
-  /* someone malicious. */
+  /* Check that the configuration has not already been loaded. This may be
+   * triggered by accident (someone has mistakingly called this method) or
+   * someone malicious. */
   if (config_loaded_) {
     cerr << "[CRITICAL] nmeta2 DPAE configuration has already been "
         "loaded." << endl;
@@ -105,6 +127,8 @@ bool Config::readConfig() {
 
   /* Verify that the YAML file contains legal keys. */
   cleanseParsedConfig(&config_yaml_);
+
+  /* TODO: Check that the values provided for each attribute are valid. */
 
   /* Assign default values if attributes are missing from the parsed config. */
   provideDefaultConfig(&config_yaml_);
@@ -136,11 +160,11 @@ void Config::cleanseParsedConfig(YAML::Node *parsed_config) {
   }
 
   /* Remove invalid keys from the parsed config. */
-  list<string>::iterator it_l;
-  for (it_l = for_deletion.begin(); it_l != for_deletion.end(); ++it_l) {
-    cout << "[INFO] Omitting invalid attribute \'" << *it_l << "\' from "
+  list<string>::iterator key;
+  for (key = for_deletion.begin(); key != for_deletion.end(); ++key) {
+    cout << "[INFO] Omitting invalid attribute \'" << *key << "\' from "
         "parsed configuration." << endl;
-    (*parsed_config).remove(*it_l);    
+    (*parsed_config).remove(*key);    
   }
 }
 

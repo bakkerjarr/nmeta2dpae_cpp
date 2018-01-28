@@ -19,7 +19,10 @@
 #
 
 cmake_minimum_required(VERSION 3.5.1)
-project(nm2dpae)
+project(nmeta2dpae)
+
+# Specify where the binary/executable will be outputted to
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin)
 
 ### Version number for nmeta2dpae
 # Declare the version number
@@ -35,10 +38,10 @@ configure_file (
 
 # Add the header files and include binary tree to the search path for the
 # nm2dpaeBuildSettings.h file.
-include_directories(src/Config "${PROJECT_BINARY_DIR}")
+include_directories(src/Config src/ext/spdlog "${PROJECT_BINARY_DIR}")
 
 # Add the source code files
-set(SOURCES src/nmeta2dpae.cpp src/Config/config.cpp)
+set(SOURCES src/nmeta2dpae.cpp src/config/config.cpp src/config/tc_policy.cpp)
 
 # configure the compiler
 set (CMAKE_CXX_STANDARD 11)
@@ -47,7 +50,8 @@ set (CMAKE_CXX_STANDARD 11)
 FIND_PACKAGE(yaml-cpp REQUIRED)
 
 # Add the executable
-add_executable(nm2dpae ${SOURCES})
+add_executable(nmeta2dpae ${SOURCES})
 
 # Link libraries to the executable
-TARGET_LINK_LIBRARIES(nm2dpae yaml-cpp)
+# pthread is included so that spdlog can run.
+TARGET_LINK_LIBRARIES(nmeta2dpae pthread yaml-cpp)
