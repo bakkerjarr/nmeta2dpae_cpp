@@ -21,8 +21,8 @@
 
 using namespace std;
 
-/* A template used to validate configuration files and assign default values */
-/* if attributes are missing. */
+/* A template used to validate configuration files and assign default values if
+ * if attributes are missing. */
 static const map<string, string> CONFIG_TEMPLATE = {
   {"nmeta_controller_address", "10.1.0.3"},
   {"nmeta_controller_port", "8080"},
@@ -90,9 +90,9 @@ string Config::getValue(string config_key) {
  * @return true if successful, false otherwise.
  */
 bool Config::readConfig() {
-  /* Check that the configuration has not already been loaded. This may be */
-  /* triggered by accident (someone has mistakingly called this method) or */
-  /* someone malicious. */
+  /* Check that the configuration has not already been loaded. This may be
+   * triggered by accident (someone has mistakingly called this method) or
+   * someone malicious. */
   if (config_loaded_) {
     cerr << "[CRITICAL] nmeta2 DPAE configuration has already been "
         "loaded." << endl;
