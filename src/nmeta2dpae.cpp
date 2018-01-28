@@ -124,7 +124,7 @@ class Nmeta2Dpae {
                                   begin(sinks), end(sinks));
       
       /* Set the log level on the logger. */
-      string log_level = conf_.getValue("nmeta_dpae_logging_level_c");
+      string log_level = conf_.getValue("nmeta_dpae_logging_level");
       if (sinks.size() == 0) {
         cout << "[WARNING] Logging disabled for nmeta2 DPAE. This will be the "
             "last message." << endl;
