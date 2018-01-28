@@ -14,6 +14,8 @@
 */
 
 #include <iostream>
+#include <syslog.h>
+
 #include "ext/spdlog/spdlog.h"
 
 #include "nmeta2dpaeBuildSettings.hpp"
@@ -21,10 +23,13 @@
 
 using namespace std;
 
+/**
+ * The core object used to setup and run the Data Path Auxiliary Engine.
+ */
 class Nmeta2Dpae {
   public:
     /**
-     * Initialise the core object used to run the Data Path Auxiliary Engine.
+     * Initialise the core object used to run the DPAE.
      * 
      * @param config_path Path to the nmeta2 DPAE configuration file.
      */
@@ -46,8 +51,8 @@ class Nmeta2Dpae {
         return false;
       }
 
-      /* Configure logging and establish a logger for this object. We store */
-      /* the sinks so that they may be passed onto other objects. */
+      /* Configure logging and establish a logger for this object. We store the
+       * sinks so that they may be passed onto other objects. */
       vector<spdlog::sink_ptr> sinks = prepareLogger();
 
       nm2_log_->debug("Debug");
@@ -72,16 +77,18 @@ class Nmeta2Dpae {
       cout << "[INFO] Configuring the nmeta2dpae logger. Note that the "
           << "console log format cannot be changed." << endl;
 
-      /* spdlog has the concept of a sink: an object that writes a log to */
-      /* its target. This could be stdout, syslog, a file etc. The vector */
-      /* below is used to group all sinks together to create a combined */
-      /* logger. This allows us to make a single function call to write out */
-      /* to many targets. Furthermore, this will be used by the multiple */
-      /* loggers in the nmeta2 DPAE application. */
-      vector<spdlog::sink_ptr> sinks; 
+      /* spdlog has the concept of a sink: an object that writes a log to its
+       * target. This could be stdout, syslog, a file etc. The vector below is
+       * used to group all sinks together to create a combined logger. This
+       * allows us to make a single function call to write out to many targets.
+       * Furthermore, this will be used by the multiple loggers in the nmeta2
+       * DPAE application. */
+      vector<spdlog::sink_ptr> sinks;
+      vector<string> sink_names;
 
       /* Check if console logging has been enabled. */
       if (stoi(conf_.getValue("console_log_enabled"))) {
+        sink_names.push_back("console");
         /* Is colourised logging being used? */
         if (stoi(conf_.getValue("coloredlogs_enabled"))) {
           /* Create a colourised sink for the logger */
@@ -91,6 +98,21 @@ class Nmeta2Dpae {
           /* Create a non-colourised sink for the logger */
           sinks.push_back(make_shared<spdlog::sinks::stdout_sink_st>());
         }
+      }
+      /* Check if syslog logging has been enabled. */
+      if (stoi(conf_.getValue("syslog_enabled"))) {
+        sink_names.push_back("syslog");
+        int syslog_facility = stoi(conf_.getValue("logfacility"));
+        /* The three parameters for the syslog sink are: ident, option and
+         * facility. See the man page for syslog and syslog.h for more
+         * information. A brief explanation of the parameters:
+         *    - ident: Can be used to identify the process issuing the log.
+         *    - option: Flags which control the operation of syslog.
+         *    - facility: Specifies the type of program that is logging the
+         *                message. This number needs to be bit shifted to the
+         *                left by 3. */
+        sinks.push_back(make_shared<spdlog::sinks::syslog_sink>("nmeta2dpae",
+                                                LOG_PID, syslog_facility<<3)); 
       }
 
       /* Combine the sinks into the one logger. */
@@ -110,9 +132,22 @@ class Nmeta2Dpae {
       else /* Treat anything else as debug level. */
         nm2_log_->set_level(spdlog::level::debug);
 
-      nm2_log_->info("Logging for nmeta2 DPAE has been established. Minimum "
-                     "logging level is: {0}", log_level);
-
+      if (sinks.size() == 0) {
+        cout << "[WARNING] Logging disabled for nmeta2 DPAE. This will be the "
+            "last message." << endl;
+      } else {
+        string names;
+        vector<string>::iterator s_name;
+          for (s_name = sink_names.begin(); s_name != sink_names.end(); ++s_name) {
+            if (s_name == sink_names.begin()) 
+              names.append(*s_name);
+            else
+              names.append(", ").append(*s_name);
+          }
+        nm2_log_->info("nmeta2 DPAE logging enabled for: {0}. Minimum logging "
+                       "level is: {1}", names, log_level);
+      }
+      
       return sinks;
     }
 
@@ -127,8 +162,8 @@ class Nmeta2Dpae {
 };
 
 int main (int argc, char* argv[]) {
-  /* Perform a sanity check to ensure that the correct number of */
-  /* command-line arguments have been provided. */
+  /* Perform a sanity check to ensure that the correct number of *
+   * command-line arguments have been provided. */
   if (argc != 2) {
       cerr << "[CRITICAL] Path to nmeta2 DPAE configuration file was not "
             "provided." << endl;

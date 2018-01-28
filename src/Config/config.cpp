@@ -149,11 +149,11 @@ void Config::cleanseParsedConfig(YAML::Node *parsed_config) {
   }
 
   /* Remove invalid keys from the parsed config. */
-  list<string>::iterator it_l;
-  for (it_l = for_deletion.begin(); it_l != for_deletion.end(); ++it_l) {
-    cout << "[INFO] Omitting invalid attribute \'" << *it_l << "\' from "
+  list<string>::iterator key;
+  for (key = for_deletion.begin(); key != for_deletion.end(); ++key) {
+    cout << "[INFO] Omitting invalid attribute \'" << *key << "\' from "
         "parsed configuration." << endl;
-    (*parsed_config).remove(*it_l);    
+    (*parsed_config).remove(*key);    
   }
 }
 
