@@ -15,26 +15,8 @@ sniff_if_names: enp0s9
 #*** Set to 1 if want to log to syslog:
 syslog_enabled: 1
 #
-#*** Where to send syslog (use localhost to keep on-box):
-loghost: localhost
-#
-#*** Port number to send on:
-logport: 514
-#
 #*** Facility to use:
 logfacility: 19
-#
-#*** Syslog Log Format:
-syslog_format: "sev=%(levelname)s module=%(name)s func=%(funcName)s %(message)s"
-#
-#*** Syslog Logging Levels Per Module
-#*** Values can be one of CRITICAL|ERROR|WARNING|INFO|DEBUG:
-nmeta_dpae_logging_level_s: INFO
-sniff_logging_level_s: INFO
-controlplane_logging_level_s: INFO
-dp_logging_level_s: INFO
-tc_logging_level_s: INFO
-tc_policy_dpae_logging_level_s: INFO
 #
 #========== CONSOLE LOGGING =========================
 #*** Set to 1 if want to log to console:
@@ -48,14 +30,15 @@ coloredlogs_enabled: 1
 #console_format: "%(levelname)s: %(name)s pid=%(process)d %(funcName)s: %(message)s"
 console_format: "%(asctime)s.%(msecs)03d %(name)s[%(process)d] %(funcName)s %(levelname)s %(message)s"
 #
-#*** Console Logging Levels Per Module
+#========== MINIMUM LOGGING LEVELS ==================
+#*** Minimum Logging Levels Per Module
 #*** Values can be one of CRITICAL|ERROR|WARNING|INFO|DEBUG:
-nmeta_dpae_logging_level_c: DEBUG
-sniff_logging_level_c: DEBUG
-controlplane_logging_level_c: DEBUG
-dp_logging_level_c: DEBUG
-tc_logging_level_c: DEBUG
-tc_policy_dpae_logging_level_c: DEBUG
+nmeta_dpae_logging_level: DEBUG
+sniff_logging_level: DEBUG
+controlplane_logging_level: DEBUG
+dp_logging_level: DEBUG
+tc_logging_level: DEBUG
+tc_policy_dpae_logging_level: DEBUG
 requests_logging_level: CRITICAL
 #
 #========== DPAE JOIN TIMING PARAMETERS ===============
@@ -90,4 +73,3 @@ suppress_flow_pkt_count_initial: 8
 #*** Number of packets after sending a suppression request for a flow to wait
 #***  before sending a follow up request in case the first one was lost
 suppress_flow_pkt_count_backoff: 500
-
