@@ -13,33 +13,34 @@
 * limitations under the License.
 */
 
-#include "data_plane_services.hpp"
+#include "sniff.hpp"
 
 using namespace std;
 
 /**
- * Setup the DataPlaneServices object.
+ * Setup the Sniff object.
  * 
  * @param conf Configuration for nmeta2 DPAE.
  * @param sinks spdlog sinks for creating a combined logger.
+ * @param tc TraffClass object used for classifying sniffed packets.
  */
-DataPlaneServices::DataPlaneServices(Config& conf, std::vector<spdlog::sink_ptr> sinks)
-  : conf_(conf), tc_(conf, sinks), sniff_(conf, sinks, tc_) {
-  dps_log_ = make_shared<spdlog::logger>("nmeta2dpae - data_plane_services",
+Sniff::Sniff(Config& conf, std::vector<spdlog::sink_ptr> sinks, TraffClass tc)
+  : conf_(conf), tc_(tc) {
+  sniff_log_ = make_shared<spdlog::logger>("nmeta2dpae - sniff",
                                          begin(sinks), end(sinks));
 
   /* Set the log level on the logger. */
-  string log_level = conf_.getValue("dp_logging_level");
-  dps_log_->info("Data Plane Services object created. Minimum logging level "
-                 "will be: {0}", log_level);
+  string log_level = conf_.getValue("sniff_logging_level");
+  sniff_log_->info("Sniff object created. Minimum logging level will be: {0}",
+                   log_level);
   if (!log_level.compare("CRITICAL"))
-    dps_log_->set_level(spdlog::level::critical);
+    sniff_log_->set_level(spdlog::level::critical);
   else if (!log_level.compare("ERROR"))
-    dps_log_->set_level(spdlog::level::err);
+    sniff_log_->set_level(spdlog::level::err);
   else if (!log_level.compare("WARNING"))
-    dps_log_->set_level(spdlog::level::warn);
+    sniff_log_->set_level(spdlog::level::warn);
   else if (!log_level.compare("INFO"))
-    dps_log_->set_level(spdlog::level::info);
+    sniff_log_->set_level(spdlog::level::info);
   else /* Treat anything else as debug level. */
-    dps_log_->set_level(spdlog::level::debug);
+    sniff_log_->set_level(spdlog::level::debug);
 }

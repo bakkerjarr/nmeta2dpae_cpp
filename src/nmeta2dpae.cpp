@@ -21,6 +21,7 @@
 #include "nmeta2dpaeBuildSettings.hpp"
 #include "config/config.hpp"
 #include "config/tc_policy.hpp"
+#include "data_plane/data_plane_services.hpp"
 
 using namespace std;
 
@@ -34,10 +35,7 @@ class Nmeta2Dpae {
      * 
      * @param config_path Path to the nmeta2 DPAE configuration file.
      */
-    Nmeta2Dpae(string config_path) : conf_(config_path) {
-      cout << "[INFO] Starting nmeta2dape version: " << nmeta2dpae_VERSION
-          << endl;
-    }
+    Nmeta2Dpae(string config_path) : conf_(config_path){}
 
     /**
      * Start the DPAE application.
@@ -55,22 +53,42 @@ class Nmeta2Dpae {
       /* Configure logging and establish a logger for this object. We store the
        * sinks so that they may be passed onto other objects. */
       vector<spdlog::sink_ptr> sinks = prepareLogger();
-      
-      nm2_log_->debug("Debug");
-      nm2_log_->info("Information");
-      nm2_log_->warn("Warning");
-      nm2_log_->error("Error");
-      nm2_log_->critical("Critical!");
+
+      /* Fork a process for each network interfaces that is being used for
+       * classifying traffic. */
+      stringstream sniff_ifnames_raw(conf_.getValue("sniff_if_names"));
+      string buf;
+      while(getline(sniff_ifnames_raw, buf, ',')) {
+        nm2_log_->debug("Process forked for network interface: {0}", buf);
+        /* TODO: We'll introduce multiple processes later on... */
+        startInterface(buf, sinks);
+        /* TODO: sleep for 1 second after forking a process */
+      }
 
       /* Instantiate TC Policy class */
-      TcPolicy tc_pol(conf_, sinks);
+      TcPolicy tc_pol(conf_, sinks); // TODO: Leave here for now, move into my equivalent of cp_run later on.
 
     }
 
   private:
     Config conf_;
     shared_ptr<spdlog::logger> nm2_log_;
-    
+
+    /**
+     * Perform the 4 phase handshake with the controller then start the
+     * classification services.
+     * 
+     * @param if_name Name of an interface being used for classification.
+     */    
+    void startInterface(string if_name, std::vector<spdlog::sink_ptr> sinks) {
+        /* Instantiate the DataPlaneServices class. */
+        DataPlaneServices dp = DataPlaneServices(conf_, sinks); // TODO: Make this a class member
+
+        /* Instantiate the ControlPlaneServices class. */
+
+        nm2_log_->info("Well here I go executing instructions again!");
+    }
+
     /**
      * Setup and register the logger. There could be multiple sinks being used
      * at the same time, such as stdout and syslog.
@@ -172,6 +190,7 @@ int main (int argc, char* argv[]) {
             "provided." << endl;
       return 1;
   }
+  cout << "[INFO] Starting nmeta2dape version: " << nmeta2dpae_VERSION << endl;
 
   /* Start nmeta2 DPAE */
   string arg_config_path(argv[1]);

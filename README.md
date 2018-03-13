@@ -26,3 +26,8 @@ $ sudo make install
 ```
 ### spdlog version 0.16.3
 spdlog is a header-only library (https://github.com/gabime/spdlog). It was installed by copying the source folder (https://github.com/gabime/spdlog/tree/master/include/spdlog) into the build tree for this implementation of nmeta2 DPAE. After making the necessary change to the CMakeLists.txt file to include the directory containing the headers, 'pthread' was added to the TARGET\_LINK_LIBRARIES command so that the program could compile.
+
+### libtbb-dev (Intel Threading Building Blocks)
+```bash
+$ sudo apt-get install libtbb-dev
+```

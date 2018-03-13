@@ -23,7 +23,7 @@ using namespace std;
  * @param conf Configuration for nmeta2 DPAE.
  * @param sinks spdlog sinks for creating a combined logger.
  */
-TcPolicy::TcPolicy(Config conf, std::vector<spdlog::sink_ptr> sinks) : conf_(conf) {
+TcPolicy::TcPolicy(Config& conf, std::vector<spdlog::sink_ptr> sinks) : conf_(conf) {
   tc_pol_log_ = make_shared<spdlog::logger>("nmeta2dpae - tc_policy",
                                             begin(sinks), end(sinks));
 
@@ -41,10 +41,4 @@ TcPolicy::TcPolicy(Config conf, std::vector<spdlog::sink_ptr> sinks) : conf_(con
     tc_pol_log_->set_level(spdlog::level::info);
   else /* Treat anything else as debug level. */
     tc_pol_log_->set_level(spdlog::level::debug);
-
-  tc_pol_log_->debug("Another debug");
-  tc_pol_log_->info("More information");
-  tc_pol_log_->warn("One more warning");
-  tc_pol_log_->error("Error, of course");
-  tc_pol_log_->critical("Still critical!");
 }

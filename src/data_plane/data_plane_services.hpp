@@ -13,25 +13,28 @@
 * limitations under the License.
 */
 
-#ifndef CONFIG_TC_POLICY_HPP_
-#define CONFIG_TC_POLICY_HPP_
+#ifndef DATA_PLANE_DATA_PLANE_SERVICES_HPP_
+#define DATA_PLANE_DATA_PLANE_SERVICES_HPP_
 
 #include "../ext/spdlog/spdlog.h"
 
-#include "config.hpp"
+#include "../config/config.hpp"
+#include "traffic_classification.hpp"
+#include "sniff.hpp"
 
 /**
- * Provides methods to ingest the traffic classification policy file
- * (main_policy.yaml) from the nmeta2 controller. Note: This object is stored
- * on the heap.
+ * Provides methods to run the services on the data-plane.
  */
-class TcPolicy {
+class DataPlaneServices {
   public:
-    TcPolicy(Config& conf, std::vector<spdlog::sink_ptr> sinks);
+    DataPlaneServices(Config& conf, std::vector<spdlog::sink_ptr> sinks);
 
   private:
     Config& conf_;
-    std::shared_ptr<spdlog::logger> tc_pol_log_;
+    TraffClass tc_;
+    Sniff sniff_;
+    std::shared_ptr<spdlog::logger> dps_log_;
+
 };
 
-#endif // CONFIG_TC_POLICY_HPP_
+#endif // DATA_PLANE_DATA_PLANE_SERVICES_HPP_

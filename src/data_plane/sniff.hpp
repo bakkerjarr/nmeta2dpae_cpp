@@ -13,25 +13,25 @@
 * limitations under the License.
 */
 
-#ifndef CONFIG_TC_POLICY_HPP_
-#define CONFIG_TC_POLICY_HPP_
+#ifndef DATA_PLANE_SNIFF_HPP_
+#define DATA_PLANE_SNIFF_HPP_
 
 #include "../ext/spdlog/spdlog.h"
 
-#include "config.hpp"
+#include "../config/config.hpp"
+#include "traffic_classification.hpp"
 
 /**
- * Provides methods to ingest the traffic classification policy file
- * (main_policy.yaml) from the nmeta2 controller. Note: This object is stored
- * on the heap.
+ * Provides methods to sniff and process packets on a given interface.
  */
-class TcPolicy {
+class Sniff {
   public:
-    TcPolicy(Config& conf, std::vector<spdlog::sink_ptr> sinks);
+    Sniff(Config& conf, std::vector<spdlog::sink_ptr> sinks, TraffClass tc);
 
   private:
     Config& conf_;
-    std::shared_ptr<spdlog::logger> tc_pol_log_;
+    TraffClass tc_;
+    std::shared_ptr<spdlog::logger> sniff_log_; 
 };
 
-#endif // CONFIG_TC_POLICY_HPP_
+#endif // DATA_PLANE_SNIFF_HPP_
