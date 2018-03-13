@@ -43,6 +43,8 @@ static const map<string, string> CONFIG_TEMPLATE = {
   {"phase3_sniff_wait_time", "1"},
   {"phase3_queue_reads", "5"},
   {"phase3_sniff_dc_timeout", "5"},
+  {"phase2_max_retries", "3"},
+  {"phase3_max_retries", "3"},
   {"keepalive_interval", "1"},
   {"keepalive_retries", "3"},
   {"mongo_addr", "localhost"},

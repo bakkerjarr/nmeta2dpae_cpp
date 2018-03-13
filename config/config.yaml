@@ -52,8 +52,12 @@ phase3_queue_reads: 5
 #
 #*** Time in seconds to wait in sniff.discover_confirm for a matching packet:
 phase3_sniff_dc_timeout: 5
-
-
+#
+#========== DPAE JOIN MAX RETRY ATTEMPTS ==============
+#*** Maximum number of retries for DPAE joining phases.
+phase2_max_retries: 3
+phase3_max_retries: 3
+#
 #========== KEEPALIVE BETWEEN DPAE and CONTROLLER =====
 #*** Interval between keepalive tests in seconds (float):
 keepalive_interval: 1
