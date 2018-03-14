@@ -24,7 +24,7 @@ using namespace std;
  * @param sinks spdlog sinks for creating a combined logger.
  * @param tc TraffClass object used for classifying sniffed packets.
  */
-Sniff::Sniff(Config& conf, std::vector<spdlog::sink_ptr> sinks, TraffClass tc)
+Sniff::Sniff(Config& conf, std::vector<spdlog::sink_ptr> sinks, TraffClass& tc)
   : conf_(conf), tc_(tc) {
   sniff_log_ = make_shared<spdlog::logger>("nmeta2dpae - sniff",
                                          begin(sinks), end(sinks));

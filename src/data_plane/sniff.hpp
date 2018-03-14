@@ -26,11 +26,11 @@
  */
 class Sniff {
   public:
-    Sniff(Config& conf, std::vector<spdlog::sink_ptr> sinks, TraffClass tc);
+    Sniff(Config& conf, std::vector<spdlog::sink_ptr> sinks, TraffClass& tc);
 
   private:
     Config& conf_;
-    TraffClass tc_;
+    TraffClass& tc_;
     std::shared_ptr<spdlog::logger> sniff_log_; 
 };
 
