@@ -13,29 +13,28 @@
 * limitations under the License.
 */
 
-#ifndef DATA_PLANE_DATA_PLANE_SERVICES_HPP_
-#define DATA_PLANE_DATA_PLANE_SERVICES_HPP_
+#ifndef DATA_PLANE_CONTROL_PLANE_SERVICES_HPP_
+#define DATA_PLANE_CONTROL_PLANE_SERVICES_HPP_
 
 #include "../ext/spdlog/spdlog.h"
 
 #include "../config/config.hpp"
-#include "traffic_classification.hpp"
-#include "sniff.hpp"
+#include "../data_plane/data_plane_services.hpp"
 
 /**
  * Provides methods to run the services on the data-plane.
  */
-class DataPlaneServices {
+class CntrPlaneServices {
   public:
-    DataPlaneServices(Config& conf, std::vector<spdlog::sink_ptr> sinks);
-    DataPlaneServices(const DataPlaneServices& other);
+    CntrPlaneServices(Config& conf, std::vector<spdlog::sink_ptr> sinks,
+                      std::string if_name, DataPlaneServices& dp);
 
   private:
     Config& conf_;
-    TraffClass tc_;
-    Sniff sniff_;
-    std::shared_ptr<spdlog::logger> dps_log_;
+    DataPlaneServices dp_;
+    std::string if_name_;
+    std::shared_ptr<spdlog::logger> cps_log_;
 
 };
 
-#endif // DATA_PLANE_DATA_PLANE_SERVICES_HPP_
+#endif // DATA_PLANE_CONTROL_PLANE_SERVICES_HPP_

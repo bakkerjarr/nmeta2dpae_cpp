@@ -22,6 +22,7 @@
 #include "config/config.hpp"
 #include "config/tc_policy.hpp"
 #include "data_plane/data_plane_services.hpp"
+#include "control_plane/control_plane_services.hpp"
 
 using namespace std;
 
@@ -81,12 +82,13 @@ class Nmeta2Dpae {
      * @param if_name Name of an interface being used for classification.
      */    
     void startInterface(string if_name, std::vector<spdlog::sink_ptr> sinks) {
-        /* Instantiate the DataPlaneServices class. */
-        DataPlaneServices dp = DataPlaneServices(conf_, sinks); // TODO: Make this a class member
+      /* Instantiate the DataPlaneServices class. */
+      DataPlaneServices dp = DataPlaneServices(conf_, sinks); // TODO: Make this a class member
 
-        /* Instantiate the ControlPlaneServices class. */
+      /* Instantiate the ControlPlaneServices class. */
+      CntrPlaneServices cp = CntrPlaneServices(conf_, sinks, if_name, dp);
 
-        nm2_log_->info("Well here I go executing instructions again!");
+      nm2_log_->info("Well here I go executing instructions again!");
     }
 
     /**

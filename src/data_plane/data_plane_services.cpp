@@ -43,3 +43,13 @@ DataPlaneServices::DataPlaneServices(Config& conf, std::vector<spdlog::sink_ptr>
   else /* Treat anything else as debug level. */
     dps_log_->set_level(spdlog::level::debug);
 }
+
+/**
+ * Copy constructor for DataPlaneServices object.
+ * 
+ * @param other Another DataPlaneServices object to copy members from.
+ */
+DataPlaneServices::DataPlaneServices(const DataPlaneServices& other)
+  : conf_(other.conf_), tc_(other.tc_), sniff_(other.sniff_) {
+  dps_log_ = other.dps_log_;
+}
