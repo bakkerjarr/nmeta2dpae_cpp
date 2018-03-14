@@ -69,10 +69,10 @@ Config::Config(string config_path) {
  * 
  * @param other Another Config object to copy members from.
  */
-Config::Config(const Config &other){
-    config_loaded_ = other.config_loaded_;
-    config_path_ = other.config_path_;
-    config_yaml_ = other.config_yaml_;
+Config::Config(const Config& other){
+  config_loaded_ = other.config_loaded_;
+  config_path_ = other.config_path_;
+  config_yaml_ = other.config_yaml_;
 }
 
 /**

@@ -27,8 +27,7 @@
 class TraffClass {
   public:
     TraffClass(Config& conf, std::vector<spdlog::sink_ptr> sinks);
-    /* TODO: Implement copy constructor */
-    TraffClass(const TraffClass &other);
+    TraffClass(const TraffClass& other);
 
   private:
     Config& conf_;

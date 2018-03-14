@@ -25,7 +25,7 @@
 class Config {
   public:
     Config(std::string config_path);
-    Config(const Config &other);
+    Config(const Config& other);
     std::string getValue(std::string config_key);
     bool readConfig();
 

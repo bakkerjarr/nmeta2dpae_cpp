@@ -58,12 +58,12 @@ TraffClass::TraffClass(Config& conf, std::vector<spdlog::sink_ptr> sinks) : conf
  * 
  * @param other Another TraffClass object to copy members from.
  */
-TraffClass::TraffClass(const TraffClass &other) : conf_(other.conf_) {
-    tc_log_ = other.tc_log_;
-    id_arp_ = other.id_arp_;
-    id_lldp_ = other.id_lldp_;
-    id_dns_ = other.id_dns_;
-    id_dhcp_ = other.id_dhcp_;
-    suppress_flow_pkt_count_initial_ = other.suppress_flow_pkt_count_initial_;
-    suppress_flow_pkt_count_backoff_ = other.suppress_flow_pkt_count_backoff_; 
+TraffClass::TraffClass(const TraffClass& other) : conf_(other.conf_) {
+  tc_log_ = other.tc_log_;
+  id_arp_ = other.id_arp_;
+  id_lldp_ = other.id_lldp_;
+  id_dns_ = other.id_dns_;
+  id_dhcp_ = other.id_dhcp_;
+  suppress_flow_pkt_count_initial_ = other.suppress_flow_pkt_count_initial_;
+  suppress_flow_pkt_count_backoff_ = other.suppress_flow_pkt_count_backoff_; 
 }
