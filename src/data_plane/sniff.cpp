@@ -14,6 +14,7 @@
 */
 
 #include "sniff.hpp"
+#include "../util/logging_util.hpp"
 
 using namespace std;
 
@@ -31,16 +32,5 @@ Sniff::Sniff(Config& conf, std::vector<spdlog::sink_ptr> sinks, TraffClass& tc)
 
   /* Set the log level on the logger. */
   string log_level = conf_.getValue("sniff_logging_level");
-  sniff_log_->info("Sniff object created. Minimum logging level will be: {0}",
-                   log_level);
-  if (!log_level.compare("CRITICAL"))
-    sniff_log_->set_level(spdlog::level::critical);
-  else if (!log_level.compare("ERROR"))
-    sniff_log_->set_level(spdlog::level::err);
-  else if (!log_level.compare("WARNING"))
-    sniff_log_->set_level(spdlog::level::warn);
-  else if (!log_level.compare("INFO"))
-    sniff_log_->set_level(spdlog::level::info);
-  else /* Treat anything else as debug level. */
-    sniff_log_->set_level(spdlog::level::debug);
+  loggingUtilSetLogLevel(&sniff_log_, "Sniff", log_level);
 }

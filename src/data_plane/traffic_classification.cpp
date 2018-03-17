@@ -14,6 +14,7 @@
 */
 
 #include "traffic_classification.hpp"
+#include "../util/logging_util.hpp"
 
 using namespace std;
 
@@ -29,18 +30,7 @@ TraffClass::TraffClass(Config& conf, std::vector<spdlog::sink_ptr> sinks) : conf
 
   /* Set the log level on the logger. */
   string log_level = conf_.getValue("tc_logging_level");
-  tc_log_->info("Traffic Classification object created. Minimum logging level "
-                 "will be: {0}", log_level);
-  if (!log_level.compare("CRITICAL"))
-    tc_log_->set_level(spdlog::level::critical);
-  else if (!log_level.compare("ERROR"))
-    tc_log_->set_level(spdlog::level::err);
-  else if (!log_level.compare("WARNING"))
-    tc_log_->set_level(spdlog::level::warn);
-  else if (!log_level.compare("INFO"))
-    tc_log_->set_level(spdlog::level::info);
-  else /* Treat anything else as debug level. */
-    tc_log_->set_level(spdlog::level::debug);
+  loggingUtilSetLogLevel(&tc_log_, "Traffic Classification", log_level);
   
   /* Retrieve config values for elephant flow suppression. */
   suppress_flow_pkt_count_initial_ = 

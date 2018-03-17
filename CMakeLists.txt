@@ -43,7 +43,8 @@ include_directories(src/Config src/ext/spdlog "${PROJECT_BINARY_DIR}")
 # Add the source code files
 set(SOURCES src/nmeta2dpae.cpp src/config/config.cpp src/config/tc_policy.cpp
     src/data_plane/data_plane_services.cpp src/data_plane/traffic_classification.cpp
-    src/data_plane/sniff.cpp src/control_plane/control_plane_services.cpp)
+    src/data_plane/sniff.cpp src/control_plane/control_plane_services.cpp
+    src/util/logging_util.cpp)
 
 # configure the compiler
 set (CMAKE_CXX_STANDARD 11)

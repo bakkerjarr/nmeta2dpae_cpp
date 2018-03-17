@@ -14,6 +14,7 @@
 */
 
 #include "tc_policy.hpp"
+#include "../util/logging_util.hpp"
 
 using namespace std;
 
@@ -29,16 +30,5 @@ TcPolicy::TcPolicy(Config& conf, std::vector<spdlog::sink_ptr> sinks) : conf_(co
 
   /* Set the log level on the logger. */
   string log_level = conf_.getValue("tc_policy_dpae_logging_level");
-  tc_pol_log_->info("Traffic Classification Policy object created. Minimum "
-                    "logging level will be: {0}", log_level);
-  if (!log_level.compare("CRITICAL"))
-    tc_pol_log_->set_level(spdlog::level::critical);
-  else if (!log_level.compare("ERROR"))
-    tc_pol_log_->set_level(spdlog::level::err);
-  else if (!log_level.compare("WARNING"))
-    tc_pol_log_->set_level(spdlog::level::warn);
-  else if (!log_level.compare("INFO"))
-    tc_pol_log_->set_level(spdlog::level::info);
-  else /* Treat anything else as debug level. */
-    tc_pol_log_->set_level(spdlog::level::debug);
+  loggingUtilSetLogLevel(&tc_pol_log_, "Traffic Classification Policy", log_level);
 }

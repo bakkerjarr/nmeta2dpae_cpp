@@ -14,8 +14,11 @@
 */
 
 #include "data_plane_services.hpp"
+#include "../util/logging_util.hpp"
 
 using namespace std;
+
+void setLogLevel(std::shared_ptr<spdlog::logger>* new_logger, string component_name, string log_level);
 
 /**
  * Setup the DataPlaneServices object.
@@ -30,18 +33,7 @@ DataPlaneServices::DataPlaneServices(Config& conf, std::vector<spdlog::sink_ptr>
 
   /* Set the log level on the logger. */
   string log_level = conf_.getValue("dp_logging_level");
-  dps_log_->info("Data Plane Services object created. Minimum logging level "
-                 "will be: {0}", log_level);
-  if (!log_level.compare("CRITICAL"))
-    dps_log_->set_level(spdlog::level::critical);
-  else if (!log_level.compare("ERROR"))
-    dps_log_->set_level(spdlog::level::err);
-  else if (!log_level.compare("WARNING"))
-    dps_log_->set_level(spdlog::level::warn);
-  else if (!log_level.compare("INFO"))
-    dps_log_->set_level(spdlog::level::info);
-  else /* Treat anything else as debug level. */
-    dps_log_->set_level(spdlog::level::debug);
+  loggingUtilSetLogLevel(&dps_log_, "Data Plane Services", log_level);
 }
 
 /**

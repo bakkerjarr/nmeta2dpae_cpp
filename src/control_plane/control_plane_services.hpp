@@ -27,13 +27,15 @@
 class CntrPlaneServices {
   public:
     CntrPlaneServices(Config& conf, std::vector<spdlog::sink_ptr> sinks,
-                      std::string if_name, DataPlaneServices& dp);
+                      std::string if_name, DataPlaneServices& dp,
+                      std::string nmeta2dpae_version);
 
   private:
     Config& conf_;
+    std::shared_ptr<spdlog::logger> cps_log_;
     DataPlaneServices dp_;
     std::string if_name_;
-    std::shared_ptr<spdlog::logger> cps_log_;
+    std::string nm2dpae_ver_;
 
 };
 

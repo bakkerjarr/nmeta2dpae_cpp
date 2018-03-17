@@ -23,6 +23,7 @@
 #include "config/tc_policy.hpp"
 #include "data_plane/data_plane_services.hpp"
 #include "control_plane/control_plane_services.hpp"
+#include "util/logging_util.hpp"
 
 using namespace std;
 
@@ -86,7 +87,8 @@ class Nmeta2Dpae {
       DataPlaneServices dp = DataPlaneServices(conf_, sinks); // TODO: Make this a class member
 
       /* Instantiate the ControlPlaneServices class. */
-      CntrPlaneServices cp = CntrPlaneServices(conf_, sinks, if_name, dp);
+      CntrPlaneServices cp = CntrPlaneServices(conf_, sinks, if_name, dp,
+                                               nmeta2dpae_VERSION);
 
       nm2_log_->info("Well here I go executing instructions again!");
     }
@@ -144,7 +146,6 @@ class Nmeta2Dpae {
                                   begin(sinks), end(sinks));
       
       /* Set the log level on the logger. */
-      string log_level = conf_.getValue("nmeta_dpae_logging_level");
       if (sinks.size() == 0) {
         cout << "[WARNING] Logging disabled for nmeta2 DPAE. This will be the "
             "last message." << endl;
@@ -157,20 +158,10 @@ class Nmeta2Dpae {
             else
               names.append(", ").append(*s_name);
           }
-        nm2_log_->info("nmeta2 DPAE logging enabled for: {0}. Minimum logging "
-                       "level will be: {1}", names, log_level);
+        nm2_log_->info("Logging will be enabled for: {0}.", names);
       }
-      if (!log_level.compare("CRITICAL"))
-        nm2_log_->set_level(spdlog::level::critical);
-      else if (!log_level.compare("ERROR"))
-        nm2_log_->set_level(spdlog::level::err);
-      else if (!log_level.compare("WARNING"))
-        nm2_log_->set_level(spdlog::level::warn);
-      else if (!log_level.compare("INFO"))
-        nm2_log_->set_level(spdlog::level::info);
-      else /* Treat anything else as debug level. */
-        nm2_log_->set_level(spdlog::level::debug);
-      
+      string log_level = conf_.getValue("nmeta_dpae_logging_level");
+      loggingUtilSetLogLevel(&nm2_log_, "nmeta2 DPAE Core", log_level);      
       return sinks;
     }
 
