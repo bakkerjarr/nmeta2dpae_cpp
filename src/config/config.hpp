@@ -33,8 +33,8 @@ class Config {
     bool config_loaded_;
     std::string config_path_;
     YAML::Node config_yaml_;
-    void cleanseParsedConfig(YAML::Node *parsed_config);
-    void provideDefaultConfig(YAML::Node *parsed_config);
+    void cleanseParsedConfig(YAML::Node* parsed_config);
+    void provideDefaultConfig(YAML::Node* parsed_config);
 };
 
 #endif // CONFIG_CONFIG_HPP_

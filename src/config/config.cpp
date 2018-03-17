@@ -137,7 +137,7 @@ bool Config::readConfig() {
  * @param parsed_config Address of YAML object that contains the parsed
  *    configuation.
  */
-void Config::cleanseParsedConfig(YAML::Node *parsed_config) {
+void Config::cleanseParsedConfig(YAML::Node* parsed_config) {
   /* Determine what keys are not valid and need to be removed. */
   list <string> for_deletion;
   YAML::const_iterator it_y;
@@ -167,7 +167,7 @@ void Config::cleanseParsedConfig(YAML::Node *parsed_config) {
  * @param parsed_config Address of YAML object that contains the parsed
  *    configuation.
  */
-void Config::provideDefaultConfig(YAML::Node *parsed_config) {
+void Config::provideDefaultConfig(YAML::Node* parsed_config) {
   map<string, string>::const_iterator it_m;
   for (it_m = CONFIG_TEMPLATE.begin(); it_m != CONFIG_TEMPLATE.end(); ++it_m) {
     /* Check that this attribute exists within the parsed configuration. */
