@@ -21,10 +21,10 @@
 cmake_minimum_required(VERSION 3.5.1)
 project(nmeta2dpae)
 
-# Specify where the binary/executable will be outputted to
+## Specify where the binary/executable will be outputted to
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin)
 
-### Version number for nmeta2dpae
+## Version number for nmeta2dpae
 # Declare the version number
 set (nmeta2dpae_VERSION_MAJOR 0)
 set (nmeta2dpae_VERSION_MINOR 0)
@@ -36,25 +36,25 @@ configure_file (
     "${PROJECT_BINARY_DIR}/nmeta2dpaeBuildSettings.hpp"
 )
 
-# Add the header files and include binary tree to the search path for the
+## Add the header files and include binary tree to the search path for the
 # nm2dpaeBuildSettings.h file.
-include_directories(src/Config src/ext/spdlog "${PROJECT_BINARY_DIR}")
+include_directories(src/Config src/ext/rapid_json src/ext/spdlog "${PROJECT_BINARY_DIR}")
 
-# Add the source code files
+## Add the source code files
 set(SOURCES src/nmeta2dpae.cpp src/config/config.cpp src/config/tc_policy.cpp
     src/data_plane/data_plane_services.cpp src/data_plane/traffic_classification.cpp
     src/data_plane/sniff.cpp src/control_plane/control_plane_services.cpp
-    src/util/logging_util.cpp)
+    src/util/json_body.cpp src/util/logging_util.cpp)
 
-# configure the compiler
+## configure the compiler
 set (CMAKE_CXX_STANDARD 11)
 
-# Include libraries
+## Include libraries
 FIND_PACKAGE(yaml-cpp REQUIRED)
 
-# Add the executable
+## Add the executable
 add_executable(nmeta2dpae ${SOURCES})
 
-# Link libraries to the executable
+## Link libraries to the executable
 # pthread is included so that spdlog can run.
-TARGET_LINK_LIBRARIES(nmeta2dpae pthread yaml-cpp)
+target_link_libraries(nmeta2dpae pthread yaml-cpp)
