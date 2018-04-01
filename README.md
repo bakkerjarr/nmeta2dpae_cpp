@@ -15,9 +15,9 @@ The repository containing the source and license for the original nmeta2 DPAE im
 The repository containing the source and license for the nmeta2 project can be found at https://github.com/mattjhayes/nmeta2.
 
 ## Testing
-This repository utilises the Google C++ Testing Framework: *Google Test*
+This repository utilises the Google C++ Testing Framework: *Google Test*. The GitHub repository for Google Test can be found at https://github.com/google/googletest.
 
-The GitHub repository for Google Test can be found at https://github.com/google/googletest.
+The *test* directory contains a separate CMakeLists.txt file for building the tests.
 
 ## Required Libraries
 ### libtbb-dev (Intel Threading Building Blocks)
