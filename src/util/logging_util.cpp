@@ -40,8 +40,10 @@ void loggingUtilSetLogLevel(shared_ptr<spdlog::logger>* new_logger,
     (*new_logger)->set_level(spdlog::level::err);
   else if (!log_level.compare("WARNING"))
     (*new_logger)->set_level(spdlog::level::warn);
-  else if (!log_level.compare("INFO"))
-    (*new_logger)->set_level(spdlog::level::info);
-  else /* Treat anything else as debug level. */
+  else if (!log_level.compare("DEBUG"))
     (*new_logger)->set_level(spdlog::level::debug);
+  else
+    /* Treat anything else as info level. This is to prevent mistakes from
+     * flooding the log with debug information. */
+    (*new_logger)->set_level(spdlog::level::info);
 }

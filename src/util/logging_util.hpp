@@ -20,6 +20,8 @@
 #ifndef UTIL_LOGGING_UTIL_HPP_
 #define UTIL_LOGGING_UTIL_HPP_
 
+#include <string>
+
 #include "../ext/spdlog/spdlog.h"
 
 void loggingUtilSetLogLevel(std::shared_ptr<spdlog::logger>* new_logger,
