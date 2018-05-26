@@ -16,8 +16,6 @@
 #include <iostream>
 #include <syslog.h>
 
-#include "ext/spdlog/spdlog.h"
-
 #include "nmeta2dpaeBuildSettings.hpp"
 #include "config/config.hpp"
 #include "config/tc_policy.hpp"
@@ -176,7 +174,7 @@ class Nmeta2Dpae {
 };
 
 int main (int argc, char* argv[]) {
-  /* Perform a sanity check to ensure that the correct number of *
+  /* Perform a sanity check to ensure that the correct number of
    * command-line arguments have been provided. */
   if (argc != 2) {
       cerr << "[CRITICAL] Path to nmeta2 DPAE configuration file was not "
