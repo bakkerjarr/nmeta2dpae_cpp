@@ -28,8 +28,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin)
 # nm2dpaeBuildSettings.h file.
 include_directories(../src/Config ../src/ext/rapid_json ../src/ext/spdlog "${PROJECT_BINARY_DIR}")
 
-## Add the source code files
-set(SOURCES ../src/util/logging_util.cpp)
+## Add the source code files for nmeta2dpae_cpp
+set(SOURCES ../src/util/logging_util.cpp ../src/util/json_body.cpp)
 
 ## configure the compiler
 set (CMAKE_CXX_STANDARD 11)
@@ -70,8 +70,9 @@ if (CMAKE_VERSION VERSION_LESS 2.8.11)
   include_directories("${gtest_SOURCE_DIR}/include")
 endif()
 
-## Add the test code files
-set(TESTS t_src/test_json_body.cpp t_src/test_logging_util.cpp)
+## Add the source files for the tests
+set(TESTS t_src/test_main.cpp t_src/test_logging_util.cpp
+    t_src/test_json_body.cpp)
 
 ## Add the executable
 add_executable(nmeta2dpae_test ${SOURCES} ${TESTS})
