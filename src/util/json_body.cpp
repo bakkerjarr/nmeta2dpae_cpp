@@ -19,6 +19,9 @@
 
 #include "json_body.hpp"
 
+#include "../ext/rapidjson/error/en.h"
+#include "../ext/rapidjson/stringbuffer.h"
+
 using namespace std;
 
 /**
@@ -50,12 +53,31 @@ bool jsonBodyDecode(string req_body, rapidjson::Document* doc,
  * Check that a JSON document contains the keys within the key_list. Return
  * false and record the missing keys.
  * 
- * @param key_list A list of JSON keys that must be within the JSON document.
- * @param doc A JSON document.
+ * At this point, parameters are pass-by-reference to reduce the amount of
+ * object data that is copied around.
+ * 
+ * @param validator RapidJSON SchemaValidator for validating the doc against.
+ * @param doc A decoded JSON document.
  * @param err_msg Contains are error message if this function returns false.
  * @return true if the JSON was successfully validated, false otherwise.
  */
-bool jsonBodyValidate(vector<string> key_list, rapidjson::Document doc,
-                      string* err_msg) {
-  return false;
+bool jsonBodyValidate(rapidjson::SchemaValidator* validator,
+                      rapidjson::Document* doc, string* err_msg) {
+  if (!doc->Accept(*validator)) {
+    /* The JSON document doc does not match the schema in validator. */
+    if (!strcmp(validator->GetInvalidSchemaKeyword(), "additionalProperties")) {
+      rapidjson::StringBuffer sb;
+      validator->GetInvalidDocumentPointer().StringifyUriFragment(sb);
+      *err_msg = "JSON document has an unexpected key: ";
+      err_msg->append(sb.GetString());
+    } else if (!strcmp(validator->GetInvalidSchemaKeyword(), "required")) {
+      *err_msg = "JSON document is missing a required key.";
+    } else if (!strcmp(validator->GetInvalidSchemaKeyword(), "type")) {
+      *err_msg = "JSON document has a value of an incorrect type.";
+    } else {
+      *err_msg = "JSON document does not match the schema (unknown error).";
+    }
+    return false;
+  }
+  return true;
 }

@@ -24,11 +24,11 @@
 #include <vector>
 
 #include "../ext/rapidjson/document.h"
-#include "../ext/rapidjson/error/en.h"
+#include "../ext/rapidjson/schema.h"
 
 bool jsonBodyDecode(std::string req_body, rapidjson::Document* doc,
                     std::string* err_msg);
-bool jsonBodyValidate(std::vector<std::string> key_list, rapidjson::Document doc,
-                      std::string* err_msg);
+bool jsonBodyValidate(rapidjson::SchemaValidator* validator,
+                      rapidjson::Document* doc, std::string* err_msg);
 
 #endif // UTIL_JSON_BODY_HPP_
