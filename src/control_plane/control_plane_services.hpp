@@ -13,10 +13,11 @@
 * limitations under the License.
 */
 
-#ifndef DATA_PLANE_CONTROL_PLANE_SERVICES_HPP_
-#define DATA_PLANE_CONTROL_PLANE_SERVICES_HPP_
+#ifndef CONTROL_PLANE_CONTROL_PLANE_SERVICES_HPP_
+#define CONTROL_PLANE_CONTROL_PLANE_SERVICES_HPP_
 
 #include "../ext/spdlog/spdlog.h"
+#include "../util/json_body.hpp"
 
 #include "../config/config.hpp"
 #include "../data_plane/data_plane_services.hpp"
@@ -29,6 +30,9 @@ class CntrPlaneServices {
     CntrPlaneServices(Config& conf, std::vector<spdlog::sink_ptr> sinks,
                       std::string if_name, DataPlaneServices& dp,
                       std::string nmeta2dpae_version);
+    bool CntrPlaneServices::cpHandshakePhase1(std::string api_base,
+                                              std::string if_name,
+                                              rapidjson::Document* response);
 
   private:
     Config& conf_;
@@ -36,7 +40,11 @@ class CntrPlaneServices {
     DataPlaneServices dp_;
     std::string if_name_;
     std::string nm2dpae_ver_;
-
+    float keepalive_interval_;
+    int keepalive_retries_;
+    int phase3_sniff_wait_time_;
+    int phase3_queue_reads_;
+    int phase3_sniff_dc_timeout_;
 };
 
-#endif // DATA_PLANE_CONTROL_PLANE_SERVICES_HPP_
+#endif // CONTROL_PLANE_CONTROL_PLANE_SERVICES_HPP_
