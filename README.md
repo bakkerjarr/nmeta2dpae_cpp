@@ -20,6 +20,11 @@ This repository utilises the Google C++ Testing Framework: *Google Test*. The Gi
 The *test* directory contains a separate CMakeLists.txt file for building the tests.
 
 ## Required Libraries
+### libcurl4-openssl-dev
+```bash
+$ sudo apt-get install libcurl4-openssl-dev
+```
+
 ### libtbb-dev (Intel Threading Building Blocks)
 ```bash
 $ sudo apt-get install libtbb-dev

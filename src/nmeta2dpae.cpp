@@ -61,7 +61,8 @@ class Nmeta2Dpae {
       while(getline(sniff_ifnames_raw, buf, ',')) {
         nm2_log_->debug("Process forked for network interface: {0}", buf);
         /* TODO: We'll introduce multiple processes later on... */
-        startInterface(buf, sinks);
+        if (!startInterface(buf, sinks))
+          return false;
         /* TODO: sleep for 1 second after forking a process */
       }
 
@@ -75,20 +76,71 @@ class Nmeta2Dpae {
     shared_ptr<spdlog::logger> nm2_log_;
 
     /**
-     * Perform the 4 phase handshake with the controller then start the
+     * Initiate the 4 phase handshake with the controller then start the
      * classification services.
      * 
      * @param if_name Name of an interface being used for classification.
+     * @param sinks spdlog sinks for creating a combined logger.
+     * @return true if the interface started successfully, false otherwise.
      */    
-    void startInterface(string if_name, std::vector<spdlog::sink_ptr> sinks) {
+    bool startInterface(string if_name, std::vector<spdlog::sink_ptr> sinks) {
       /* Instantiate the DataPlaneServices class. */
-      DataPlaneServices dp = DataPlaneServices(conf_, sinks); // TODO: Make this a class member
+      DataPlaneServices dp = DataPlaneServices(conf_, sinks);
 
       /* Instantiate the ControlPlaneServices class. */
+      string api_url = conf_.getValue("nmeta_controller_address");
+      string api_port = conf_.getValue("nmeta_controller_port");
+      string api_path = conf_.getValue("nmeta_api_path");
+      string api_base = api_url + ":" + api_port + "/" + api_path;
+      nm2_log_->info("nmeta2 controller API endpoint set to: {0}", api_base);
       CntrPlaneServices cp = CntrPlaneServices(conf_, sinks, if_name, dp,
-                                               nmeta2dpae_VERSION);
+                                               nmeta2dpae_VERSION, api_base);
+      if (!cp.initHttpLib()) {
+        nm2_log_->critical("Unable to initialise libcurl, this is needed for "
+                           "the DPAE to make API requests to the controller.");
+        return false;
+      }
+      
+      /* A while true loop is used in case the handshake process fails and
+       * needs to restart. */
+      while(1) {
+        /* Start phase 1 to connect to the controller. */
+        nm2_log_->info("Controller handshake phase 1 initiated for interface {0}", if_name);
+        while(1) {
+          if (!cp.cpHandshakePhase1(if_name, NULL)) {
+            nm2_log_->error("Phase 1 to join controller failed, will retry "
+                            "for interface: {0}", if_name);
+          }
+          break;
+/* PYTHON IMPLEMENTATION TO FOLLOW
+                result = self.controlchannel.phase1(self.api_base, if_name)
+                if not isinstance(result, dict):
+                    self.logger.error("Phase 1 join to controller failed, "
+                                        "will retry, "
+                                    "interface=%s result=%s", if_name, result)
+                    time.sleep(3)
+                    phase1_connected = 0 // in C++ just use continue
+                    continue
 
-      nm2_log_->info("Well here I go executing instructions again!");
+                if not 'dpae2ctrl_mac' in result:
+                    self.logger.error("Phase 1 join to controller failed, "
+                                        "will retry, "
+                                    "interface=%s", if_name)
+                    time.sleep(3)
+                    phase1_connected = 0 // in C++ just use continue
+                    continue
+                else:
+                    dpae2ctrl_mac = result['dpae2ctrl_mac']
+                    ctrl2dpae_mac = result['ctrl2dpae_mac']
+                    dpae_ethertype = result['dpae_ethertype']
+                    location = result['location']
+                    phase1_connected = 1 // in C++ use break
+*/
+        }
+        nm2_log_->info("Controller handshake phase 1 active for interface {0}", if_name);
+        break;
+      }
+      return true;
     }
 
     /**

@@ -43,7 +43,9 @@ include_directories(src/Config src/ext/rapid_json src/ext/spdlog "${PROJECT_BINA
 ## Add the source code files
 set(SOURCES src/nmeta2dpae.cpp src/config/config.cpp src/config/tc_policy.cpp
     src/data_plane/data_plane_services.cpp src/data_plane/traffic_classification.cpp
-    src/data_plane/sniff.cpp src/control_plane/control_plane_services.cpp
+    src/data_plane/sniff.cpp
+    src/control_plane/control_plane_services.cpp
+    src/control_plane/control_plane_api_requests.cpp
     src/util/json_body.cpp src/util/logging_util.cpp)
 
 ## configure the compiler
@@ -57,4 +59,4 @@ add_executable(nmeta2dpae ${SOURCES})
 
 ## Link libraries to the executable
 # pthread is included so that spdlog can run.
-target_link_libraries(nmeta2dpae pthread yaml-cpp)
+target_link_libraries(nmeta2dpae curl pthread yaml-cpp)

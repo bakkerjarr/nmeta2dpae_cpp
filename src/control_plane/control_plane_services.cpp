@@ -26,11 +26,12 @@ using namespace std;
  * @param if_name Name of NIC to sniff network traffic from for classification.
  * @param dp DataPlaneServices object to assist in controller handshake.
  * @param nmeta2dpae_version String representing the current DPAE version.
+ * @param api_base Completed URL for controller API endpoint.
  */
-CntrPlaneServices::CntrPlaneServices(Config& conf, std::vector<spdlog::sink_ptr> sinks,
-                                     std::string if_name, DataPlaneServices& dp,
-                                     string nmeta2dpae_version)
-  : conf_(conf), dp_(dp) {
+CntrPlaneServices::CntrPlaneServices(Config& conf, vector<spdlog::sink_ptr> sinks,
+                                     string if_name, DataPlaneServices& dp,
+                                     string nmeta2dpae_version, string api_base)
+  : conf_(conf), dp_(dp), cp_api_req_(api_base) {
   cps_log_ = make_shared<spdlog::logger>("nmeta2dpae - control_plane_services",
                                          begin(sinks), end(sinks));
 
@@ -38,7 +39,60 @@ CntrPlaneServices::CntrPlaneServices(Config& conf, std::vector<spdlog::sink_ptr>
   string log_level = conf_.getValue("dp_logging_level");
   loggingUtilSetLogLevel(&cps_log_, "Control Plane Services", log_level);
 
+  /* Get configuration parameters for the 'keep alive' heartbeat. */
+  keepalive_interval_ = stof(conf_.getValue("keepalive_interval"));
+  keepalive_retries_ = stoi(conf_.getValue("keepalive_retries"));
+
+  /* Get configuration parameters for sniff discover timings. */
+  phase3_sniff_wait_time_ = stoi(conf_.getValue("phase3_sniff_wait_time"));
+  phase3_queue_reads_ = stoi(conf_.getValue("phase3_queue_reads"));
+  phase3_sniff_dc_timeout_ = stoi(conf_.getValue("phase3_sniff_dc_timeout"));
+
   /* Initialise other members from parameters. */
   if_name_ = if_name;
   nm2dpae_ver_ = nmeta2dpae_version;
 }
+
+/**
+ * Perform phase 1 of the control plane handshake with the nmeta2 controller.
+ * 
+ * @param if_name Name of the interface being used for classification..
+ * @param response Used to write the JSON response from the controller.
+ * @return true if phase 1 completed successfully, false otherwise.
+ */
+bool CntrPlaneServices::cpHandshakePhase1(string if_name,
+                                          rapidjson::Document* response) {
+  cps_log_->info("Phase 1 Disconnected");
+  string err_msg;
+  /* Connect to the controller API via an HTTP/1.1 session. */
+  /* TODO: write util code for making API requests. It'll wrap around libcurl
+   * for now but I might switch it out later. Will need to build unit tests for
+   * the wrapper as well.. */
+  if (!cp_api_req_.initConnection(&err_msg)) {
+    cps_log_->error("Connection initialisation failure: {0}", err_msg);
+    return false;
+  }
+
+  /* TODO: My cURL wrapper will need to use curl_easy_send and curl_easy_recv
+   * as Matt's protocol will need a bit of rework for it to handle a callback
+   * approach. Need to research how to get this to work, https://curl.haxx.se/libcurl/c/sendrecv.html
+   * might be of help. Note that it has a function for waiting on a socket
+   * before sending and receiving data. */
+
+  return true;
+}
+
+ /**
+  * Setup the program environment for the HTTP request library. This is
+  * libcurl in this case. This function needs to be called at least once.
+  * 
+  * @return true if the program environment could be successfully set up,
+  *         false otherwise.
+  */
+ bool CntrPlaneServices::initHttpLib() {
+   cps_log_->info("Initialising the program environment for libcurl...");
+   if (curl_global_init(CURL_GLOBAL_DEFAULT))
+    return false;
+  return true;
+ }
+  
