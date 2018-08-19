@@ -30,7 +30,7 @@ using namespace std;
  * 
  * @param req_body A JSON object encoded as a string.
  * @param doc The decoded JSON document.
- * @param err_msg Contains are error message if this function returns false.
+ * @param err_msg Contains an error message if this function returns false.
  * @return true if JSON could be successfully decoded, false otherwise.
  */
 bool jsonBodyDecode(string req_body, rapidjson::Document* doc,
@@ -58,7 +58,7 @@ bool jsonBodyDecode(string req_body, rapidjson::Document* doc,
  * 
  * @param validator RapidJSON SchemaValidator for validating the doc against.
  * @param doc A decoded JSON document.
- * @param err_msg Contains are error message if this function returns false.
+ * @param err_msg Contains an error message if this function returns false.
  * @return true if the JSON was successfully validated, false otherwise.
  */
 bool jsonBodyValidate(rapidjson::SchemaValidator* validator,
