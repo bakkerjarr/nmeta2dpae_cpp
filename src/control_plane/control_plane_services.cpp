@@ -13,8 +13,14 @@
 * limitations under the License.
 */
 
+#include "uuid/uuid.h"
+
 #include "control_plane_services.hpp"
 #include "../util/logging_util.hpp"
+
+
+#include <iostream>
+
 
 using namespace std;
 
@@ -27,11 +33,13 @@ using namespace std;
  * @param dp DataPlaneServices object to assist in controller handshake.
  * @param nmeta2dpae_version String representing the current DPAE version.
  * @param api_base Completed URL for controller API endpoint.
+ * @param hostname_dpae Hostname of the machine running the DPAE application.
  */
 CntrPlaneServices::CntrPlaneServices(Config& conf, vector<spdlog::sink_ptr> sinks,
                                      string if_name, DataPlaneServices& dp,
-                                     string nmeta2dpae_version, string api_base)
-  : conf_(conf), dp_(dp), cp_api_req_(api_base) {
+                                     string nmeta2dpae_version, string api_base,
+                                     string hostname_dpae)
+  : conf_(conf), dp_(dp), cp_api_mgmt_(api_base) {
   cps_log_ = make_shared<spdlog::logger>("nmeta2dpae - control_plane_services",
                                          begin(sinks), end(sinks));
 
@@ -51,6 +59,13 @@ CntrPlaneServices::CntrPlaneServices(Config& conf, vector<spdlog::sink_ptr> sink
   /* Initialise other members from parameters. */
   if_name_ = if_name;
   nm2dpae_ver_ = nmeta2dpae_version;
+
+  /* Get the machine's hostname and generate a UUID. */
+  hostname_dpae_ = hostname_dpae;
+  uuid_t uuid_generated;
+  uuid_generate(uuid_generated);
+  uuid_unparse(uuid_generated, uuid_dpae_);
+  cps_log_->debug("Hostname: {0}\tUUID: {1}", hostname_dpae_, uuid_dpae_);
 }
 
 /**
@@ -62,22 +77,30 @@ CntrPlaneServices::CntrPlaneServices(Config& conf, vector<spdlog::sink_ptr> sink
  */
 bool CntrPlaneServices::cpHandshakePhase1(string if_name,
                                           rapidjson::Document* response) {
-  cps_log_->info("Phase 1 Disconnected");
+  cps_log_->info("Phase 1 disconnected {0}", hostname_dpae_);
   string err_msg;
   /* Connect to the controller API via an HTTP/1.1 session. */
   /* TODO: write util code for making API requests. It'll wrap around libcurl
    * for now but I might switch it out later. Will need to build unit tests for
    * the wrapper as well.. */
-  if (!cp_api_req_.initConnection(&err_msg)) {
+  if (!cp_api_mgmt_.initConnection(&err_msg)) {
     cps_log_->error("Connection initialisation failure: {0}", err_msg);
     return false;
   }
+  cps_log_->debug("cURL connection initialisation completed successfully.");
 
   /* TODO: My cURL wrapper will need to use curl_easy_send and curl_easy_recv
    * as Matt's protocol will need a bit of rework for it to handle a callback
    * approach. Need to research how to get this to work, https://curl.haxx.se/libcurl/c/sendrecv.html
    * might be of help. Note that it has a function for waiting on a socket
-   * before sending and receiving data. */
+   * before sending and receiving data.
+   * 
+   * I can use the callback approach for the handshake part of nmeta2dpae as
+   * curl_easy_perform blocks and waits for a response (just need to set a
+   * timeout...). In this case however, I will need a separate class for
+   * handling classification results as I intend to use the non-block libcurl
+   * MULTI API. Time to rename things! */
+
 
   return true;
 }

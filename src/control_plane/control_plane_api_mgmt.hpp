@@ -13,20 +13,21 @@
 * limitations under the License.
 */
 
-#ifndef CONTROL_PLANE_CONTROL_PLANE_API_REQUESTS_
-#define CONTROL_PLANE_CONTROL_PLANE_API_REQUESTS_
+#ifndef CONTROL_PLANE_CONTROL_PLANE_API_MGMT_
+#define CONTROL_PLANE_CONTROL_PLANE_API_MGMT_
 
 #include <string>
 
 #include <curl/curl.h>
 
 /**
- * A class that wraps up API requests made to the controller.
+ * A class that wraps up API requests made to the controller for the handshake
+ * and keep-alive protocols used to connect to the controller.
  */
-class CntrPlaneAPIRequests {
+class CntrPlaneApiMgmt {
   public:
-    CntrPlaneAPIRequests(std::string api_url);
-    ~CntrPlaneAPIRequests();
+    CntrPlaneApiMgmt(std::string api_url);
+    ~CntrPlaneApiMgmt();
     bool initConnection(std::string* err_msg);
 
   private:
@@ -35,4 +36,4 @@ class CntrPlaneAPIRequests {
     char error_buffer_[CURL_ERROR_SIZE];
 };
 
-#endif // CONTROL_PLANE_CONTROL_PLANE_API_REQUESTS_
+#endif // CONTROL_PLANE_CONTROL_PLANE_API_MGMT_

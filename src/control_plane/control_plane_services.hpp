@@ -20,7 +20,7 @@
 #include "../util/json_body.hpp"
 
 #include "../config/config.hpp"
-#include "control_plane_api_requests.hpp"
+#include "control_plane_api_mgmt.hpp"
 #include "../data_plane/data_plane_services.hpp"
 
 /**
@@ -30,17 +30,20 @@ class CntrPlaneServices {
   public:
     CntrPlaneServices(Config& conf, std::vector<spdlog::sink_ptr> sinks,
                       std::string if_name, DataPlaneServices& dp,
-                      std::string nmeta2dpae_version, std::string api_base);
+                      std::string nmeta2dpae_version, std::string api_base,
+                      std::string hostname_dpae);
     bool cpHandshakePhase1(std::string if_name, rapidjson::Document* response);
     bool initHttpLib(); 
 
   private:
     Config& conf_;
     std::shared_ptr<spdlog::logger> cps_log_;
-    CntrPlaneAPIRequests cp_api_req_;
+    CntrPlaneApiMgmt cp_api_mgmt_;
     DataPlaneServices dp_;
     std::string if_name_;
     std::string nm2dpae_ver_;
+    std::string hostname_dpae_;
+    char uuid_dpae_[37];
     float keepalive_interval_;
     int keepalive_retries_;
     int phase3_sniff_wait_time_;

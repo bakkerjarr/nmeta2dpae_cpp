@@ -30,6 +30,11 @@ $ sudo apt-get install libcurl4-openssl-dev
 $ sudo apt-get install libtbb-dev
 ```
 
+### libuuid
+```bash
+$ sudo apt-get install uuid-dev
+```
+
 ### RapidJSON version 1.1.0
 RapidJSON is a header-only library (https://github.com/Tencent/rapidjson/tree/version1.1.0). It was installed by copy the source folder (https://github.com/Tencent/rapidjson/tree/version1.1.0/include/rapidjson) into the build tree for this implementation of nmeta2 DPAE. The CMakeList.txt includes the library through the ```include_directories``` directive.
 

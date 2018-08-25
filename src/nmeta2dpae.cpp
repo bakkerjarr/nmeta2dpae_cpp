@@ -14,7 +14,9 @@
 */
 
 #include <iostream>
+#include <limits.h>
 #include <syslog.h>
+#include <unistd.h>
 
 #include "nmeta2dpaeBuildSettings.hpp"
 #include "config/config.hpp"
@@ -88,13 +90,20 @@ class Nmeta2Dpae {
       DataPlaneServices dp = DataPlaneServices(conf_, sinks);
 
       /* Instantiate the ControlPlaneServices class. */
+      char buf_hostname[HOST_NAME_MAX];
+      if (gethostname(buf_hostname, HOST_NAME_MAX)) {
+        nm2_log_->critical("Unable to fetch the hostname of this machine.");
+        return false;
+      }
+      string hostname_dpae(buf_hostname);
       string api_url = conf_.getValue("nmeta_controller_address");
       string api_port = conf_.getValue("nmeta_controller_port");
       string api_path = conf_.getValue("nmeta_api_path");
       string api_base = api_url + ":" + api_port + "/" + api_path;
       nm2_log_->info("nmeta2 controller API endpoint set to: {0}", api_base);
       CntrPlaneServices cp = CntrPlaneServices(conf_, sinks, if_name, dp,
-                                               nmeta2dpae_VERSION, api_base);
+                                               nmeta2dpae_VERSION, api_base,
+                                               hostname_dpae);
       if (!cp.initHttpLib()) {
         nm2_log_->critical("Unable to initialise libcurl, this is needed for "
                            "the DPAE to make API requests to the controller.");

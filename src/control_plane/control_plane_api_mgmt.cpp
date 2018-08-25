@@ -13,36 +13,38 @@
 * limitations under the License.
 */
 
-#include "control_plane_api_requests.hpp"
+#include "control_plane_api_mgmt.hpp"
 
 using namespace std;
 
 /**
- * Initialise a CntrPlaneAPIRequests object for managing API requests.
+ * Initialise a CntrPlaneApiMgmt object for managing API requests for the
+ * handshake and keep-alive protocols used to connect to the controller.
  * 
  * @param api_url API URL of the target nmeta2 controller.
  */
-CntrPlaneAPIRequests::CntrPlaneAPIRequests(string api_url) {
+CntrPlaneApiMgmt::CntrPlaneApiMgmt(string api_url) {
   api_url_ = api_url;
   conn_ = NULL;
 }
 
 /**
- * Destructor for CntrPlaneAPIRequests class. Needed to close connections that
+ * Destructor for CntrPlaneApiMgmt class. Needed to close connections that
  * are managed by libcurl.
  */
-CntrPlaneAPIRequests::~CntrPlaneAPIRequests() {
+CntrPlaneApiMgmt::~CntrPlaneApiMgmt() {
   if (conn_ != NULL)
     curl_easy_cleanup(conn_);
 }
 
 /**
- * Initialise a CntrPlaneAPIRequests object for managing API requests.
+ * Initialise a CntrPlaneApiMgmt object for managing API requests for the
+ * handshake and keep-alive protocols used to connect to the controller.
  * 
  * @param err_msg Contains an error message if this function returns false.
  * @return true if the libcurl connection was be established, false otherwise.
  */
-bool CntrPlaneAPIRequests::initConnection(string* err_msg) {
+bool CntrPlaneApiMgmt::initConnection(string* err_msg) {
   CURLcode code;
  
   conn_ = curl_easy_init();
@@ -58,17 +60,35 @@ bool CntrPlaneAPIRequests::initConnection(string* err_msg) {
     err_msg->append(curl_easy_strerror(code)); // Turn error code into string
     return false;
   }
-
-  code = curl_easy_setopt(conn_, CURLOPT_URL, api_url_);
+  
+  /* The type of the URL string must be cast to char*. It cannot be string or
+   * const char*. */
+  code = curl_easy_setopt(conn_, CURLOPT_URL, (char*) api_url_.c_str());
   if(code != CURLE_OK) {
     *err_msg = "Unable to set URL for cURL connection: ";
     err_msg->append(error_buffer_);
     return false;
   }
 
-  code = curl_easy_setopt(conn_, CURLOPT_TCP_KEEPALIVE, api_url_);
+  code = curl_easy_setopt(conn_, CURLOPT_TCP_KEEPALIVE, 1L);
   if(code != CURLE_OK) {
-    *err_msg = "Unable to set client-side TCP keep-alive for cURL connection: ";
+    *err_msg = "Unable to set TCP keep-alive for cURL connection: ";
+    err_msg->append(error_buffer_);
+    return false;
+  }
+  /* Interval time between keep-alive probes while the connection is idle:
+   * 60 seconds */
+  code = curl_easy_setopt(conn_, CURLOPT_TCP_KEEPIDLE, 120L);
+  if(code != CURLE_OK) {
+    *err_msg = "Unable to set TCP keep-alive idle time for cURL connection: ";
+    err_msg->append(error_buffer_);
+    return false;
+  }
+  /* Interval time between keep-alive probes: 60 seconds */
+  code = curl_easy_setopt(conn_, CURLOPT_TCP_KEEPINTVL, 60L);
+  if(code != CURLE_OK) {
+    *err_msg = "Unable to set TCP keep-alive probe interval time for cURL "
+               "connection: ";
     err_msg->append(error_buffer_);
     return false;
   }
